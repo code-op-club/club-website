@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^1.11.0",
+    "express": "^4.18.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "6",
+    "stripe": "^10.14.0",
     "vite-plugin-mkcert": "^1.10.1"
   },
   "devDependencies": {

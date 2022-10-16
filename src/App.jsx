@@ -1,12 +1,23 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
 import { useAuth0 } from "@auth0/auth0-react";
+// import 'fetch';
 
 function App() {
   const [count, setCount] = useState(0)
   const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
-  
+  const [apiResponse, setApiResponse] = useState({});
+  useEffect(() => {
+    fetch("http://localhost:3000/user-billing-status/")
+      .then(res => res.json())
+      .then(
+        (json) => {
+          setApiResponse(json);
+        }
+      );
+  });
+
   let authWidget;
   if (!isAuthenticated) {
     authWidget = (
@@ -40,6 +51,10 @@ function App() {
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
       </div>
+      <div className="card">
+        Server Response: {new String(apiResponse.status)}
+      </div>
+
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
