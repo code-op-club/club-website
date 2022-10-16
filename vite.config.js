@@ -13,6 +13,20 @@ import mkcert from 'vite-plugin-mkcert'
 // don't have an SSL cert yet.  This will work
 // on localhost, but isn't enough for c2w.tech.
 export default defineConfig({
-   server: { https: true },
-   plugins: [ mkcert(), react() ]
+    server: {
+        https: true,
+	proxy: {
+            "/api": {
+                target: "http://localhost:3000",
+		changeOrigin: true,
+		secure: false,
+		rewrite: (path) => {
+                    const newpath = path.replace(/^\/api/, "");
+                    console.log('REWROTE: ', newpath);
+                    return newpath;
+		},
+	    },
+	}
+    },
+    plugins: [ mkcert(), react() ]
 })

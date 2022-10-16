@@ -9,14 +9,15 @@ function App() {
   const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
   const [apiResponse, setApiResponse] = useState({});
   useEffect(() => {
-    fetch("http://localhost:3000/user-billing-status/")
+    fetch("/api/user-billing-status/")
       .then(res => res.json())
       .then(
         (json) => {
+          console.log('got json: ', json);
           setApiResponse(json);
         }
       );
-  });
+  }, []);
 
   let authWidget;
   if (!isAuthenticated) {
