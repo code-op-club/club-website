@@ -6,18 +6,36 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 function App() {
   const [count, setCount] = useState(0)
-  const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
+  const { getIdTokenClaims,  user, loginWithRedirect, isAuthenticated, logout, getAccessTokenSilently } = useAuth0();
   const [apiResponse, setApiResponse] = useState({});
+
   useEffect(() => {
-    fetch("/api/user-billing-status/")
-      .then(res => res.json())
-      .then(
-        (json) => {
-          console.log('got json: ', json);
-          setApiResponse(json);
+    const asyncCall = async () => {
+      console.log("Auth0 User: ", user);
+      
+      // Note - if not logged into Auth0, these will cause crashes
+      const access_token = await getAccessTokenSilently();
+      const claims = await getIdTokenClaims();
+
+      console.log('CLAIMS:', claims, claims?.__raw);
+
+      fetch("/api/user-billing-status/", {
+        headers: {
+          Authorization: `Bearer ${claims?.__raw}`,
         }
-      );
-  }, []);
+      })
+        .then(res => res.json())
+        .then(
+          (json) => {
+            console.log('got json: ', json);
+            setApiResponse(json);
+          }
+        );
+    };
+    if (isAuthenticated) {
+      asyncCall();  // fire and forget
+    }
+  }, [isAuthenticated]);
 
   let authWidget;
   if (!isAuthenticated) {
@@ -26,7 +44,10 @@ function App() {
     );
   } else {
     authWidget = (
-        <button onClick={() => logout()}>Log Out</button>
+        <div>
+          <div> Welcome {user.name}!</div>
+          <button onClick={() => logout()}>Log Out</button>
+        </div>
     );
   }
 
